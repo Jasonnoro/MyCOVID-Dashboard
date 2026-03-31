@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <link rel="stylesheet" href="/static/styles.css">
+
+  <title>MyCOVID DASHBOARD</title>
+  <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+
+</head>
+<body>
+  <h1>Welcome to MyCOVID DASHBOARD</h1>
+
+  <p class="tagline">
+  An interactive dashboard to explore COVID-19 trends, revealing patterns in cases, deaths, and vaccinations over time.
+  </p>
+  
+  <p>COVID Cases & Vaccination Data are recorded from {{ start_date }} to {{ end_date }} </p>
+  
+  <p>Countries available to choose from</p>
+  <ul>
+    {% for country in countries %}
+      <li>{{country}}</li>
+    {% endfor %}
+  </ul>
+
+  <div>
+    <label>Pick a country: </label>
+    <select id="country" name="country">
+      {% for c in countries %}
+        <option value="{{ c }}" {% if c == selected_country %}selected{% endif %}>
+          {{c}}
+        </option>
+      {% endfor %}
+    </select>
+  </div>
+
+  <div>
+    <label>Pick a metric: </label>
+    <select id="metric" name="metric">
+      <option value="new_cases" {% if metric == "new_cases" %}selected{% endif %}>Cases</option>
+      <option value="new_vaccinations" {% if metric == "new_vaccinations" %} selected {% endif %}>Vaccinations</option>
+      <option value="new_deaths" {% if metric == "new_deaths" %} selected {% endif %}>Deaths</option> 
+      <option value="vaccinations_per_hundred" {% if metric == "vaccinations_per_hundred" %} selected {% endif %}>Vaccinations per hundred</option>
+      <option value="cases_per_million" {% if metric == "cases_per_million" %} selected {% endif %}>Cases per Million</option>
+
+    </select>
+  </div>
+  
+  <div id="chart"></div>
+  <p class="chart-caption">
+  Figure: Trend of selected COVID {{metric}} over time. Data may include reporting delays and filled missing values.
+  </p>
+
+  <div>
+    <div class="title">Key Insights</div>
+    <div id="insights"></div>
+  </div>
+  
+  
+
+  <script>
+    const countrySelected=document.getElementById('country')
+    const metricSelected=document.getElementById('metric')
+
+    const metricLabels = {
+    new_cases: "New Cases",
+    new_deaths: "New Deaths",
+    new_vaccinations: "New Vaccinations",
+    vaccinations_per_hundred: "Vaccinations per 100 People",
+    cases_per_million: "Cases per Million"
+    };
+
+    function updateChart(){
+      const country=countrySelected.value 
+      const metric=metricSelected.value
+
+      fetch(`/data?country=${country}&metric=${metric}`).then(response => response.json().then(data=>{
+        const graphInfo={
+        x:data.dates,
+        y:data.values,
+        type: "scatter"
+        }
+
+        const layout = {
+        title: `${metricLabels[metric]} Trends in ${country}`,
+        autosize: true,
+        yaxis: {
+          title: metricLabels[metric]
+        },
+        xaxis:{
+          title: "Timeline"
+        }
+        };
+
+        Plotly.react("chart", [graphInfo], layout);
+
+        let insight="";
+        insight+=`This chart shows the trend of '${metricLabels[metric]}' for ${country}. `;
+        insight += `The chart helps identify trends, spikes, and patterns in the data. `;
+        insight += `Recent spikes may indicate reporting changes or real-world events, `;
+        insight += `However, correlation does NOT imply causation; increases or decreases may be influenced by external factors such as policy changes, reporting delays, or real-world events. `;
+
+        insight += `Values are shown as daily data, and missing values are handled by filling with 0, `;
+        
+        if(metric === "new_cases"){
+          insight += `For new cases, spikes may reflect outbreaks, testing changes, or reporting updates. `;
+          insight += `A smoother trend may indicate general spread patterns rather than daily fluctuations. `;
+        }
+
+        else if(metric === "new_deaths"){
+          insight += `Deaths data often lags behind cases because outcomes take time to develop. `;
+          insight += `Spikes may be delayed reflections of earlier infection waves rather than immediate changes. `;
+        }
+
+        else if(metric === "new_vaccinations"){
+          insight += `Vaccination data may show sudden jumps due to batch reporting or large-scale vaccination drives. `;
+          insight += `Trends help show how quickly a population is being vaccinated over time. `;
+        }
+
+        // Design choices
+        insight += `A line chart is used to clearly show trends over time. `;
+
+        insight += `Missing values were handled by filling with 0, which may slightly affect accuracy but preserves the dataset structure. `;
+
+        insight += `The data is sorted by date to ensure correct chronological visualization. `;
+
+        document.getElementById("insights").innerText=insight;
+      }))
+    }
+    countrySelected.addEventListener("change", updateChart);
+    metricSelected.addEventListener("change", updateChart);
+
+    updateChart();
+  </script>
+
+</body>
+</html>
