@@ -1,10 +1,10 @@
-COVID-19 Interactive Dashboard
+**COVID-19 Interactive Dashboard**
 
-Project Overview
+->**Project Overview**
 
 This project is an interactive COVID-19 dashboard built using Flask, Pandas, and Plotly. It allows users to explore trends in COVID-19 metrics such as new cases, deaths, and vaccinations across different countries over time. The dashboard dynamically updates based on user selections without requiring a page reload.
 
-Features
+->**Features**
 
 Select country and metric using dropdown menus
 
@@ -17,7 +17,8 @@ Insight generation explaining trends and patterns
 Smooth user experience without page reload
 
 
-Technologies Used
+
+->**Technologies Used**
 
 Flask (backend framework)
 
@@ -27,18 +28,21 @@ Plotly (data visualization)
 
 HTML, CSS, JavaScript (frontend)
 
-Data Processing
+
+->**Data Processing**
 
 Missing values in new_vaccinations were filled with 0 to preserve dataset structure
 Data was sorted by date for correct chronological visualization
 A 7-day rolling average was computed to smooth fluctuations
 Monthly aggregations were created for additional analysis
 
-Insights & Analysis
+
+->**Insights & Analysis**
 
 The dashboard highlights trends such as spikes in cases, vaccination rollouts, and mortality patterns. It emphasizes that correlation does not imply causation, as trends may be influenced by reporting delays, policy changes, or real-world events. Death data often lags behind case data, and vaccination spikes may result from batch reporting.
 
-How to Run the Project
+
+->**How to Run the Project**
 
 Clone the repository:
 git clone https://github.com/your-username/your-repo.git
@@ -63,9 +67,10 @@ API Endpoint
 
 Returns JSON data used to dynamically update the chart.
 
-Project Structure
+->**Project Structure**
 
 project/
+
 │── app.py
 
 │── templates/
@@ -80,7 +85,9 @@ project/
 
 │── COVID_Country_Sample.csv
 
-Learning Outcomes
+
+->**Learning Outcomes**
+
 Data cleaning and preprocessing with Pandas
 
 Building a Flask web application
@@ -91,6 +98,6 @@ Handling API requests and dynamic updates
 
 Designing a responsive dashboard interface
 
-Author
+->**Author**
 
 Jason Noronha
